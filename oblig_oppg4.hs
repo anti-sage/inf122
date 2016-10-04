@@ -1,3 +1,4 @@
+module Oblig12016 where
 import Data.Char
 
 data Ast = Number Integer | Name String | App Ast [Ast] | Block [Ast] | Case Ast [Ast] | Bool Ast Ast Ast | Default
@@ -47,7 +48,7 @@ parseApp (x:xs)
 parseCase (x:xs)
 	| x == "case" =
 		if (head xs) == "otherwise"
-			then (Case Default [fst defaultExpr], drop 1 (snd defaultExpr))
+			then (Case Default [fst defaultExpr], snd defaultExpr)
 			else (Case (fst bool) ((fst expr) : [fst (parseCase (snd expr))]), snd (parseCase (snd expr)))
 	| otherwise = error "Bad case"
 		where
