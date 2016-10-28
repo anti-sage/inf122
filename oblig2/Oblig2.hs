@@ -28,10 +28,9 @@ parseCell str = ((coord, life) : board, r3)
         (board, r3) = parseCell $ drop 2 r2
 
 parseLife :: String -> (Life, String)
-parseLife str
-    | (take 4 str) == "Dead" = (Dead, drop 4 str)
-    | (take 5 str) == "Alive" = (Alive, drop 5 str)
-    | otherwise = error "Parse error, expected dead or alive"
+parseLife ('D':'e':'a':'d':r) = (Dead, r)
+parseLife ('A':'l':'i':'v':'e':r) = (Alive, r)
+parseLife _ = error "Parse error, expected dead or alive"
 
 parseTuple :: String -> ((Int, Int), String)
 parseTuple str = ((read x, read y), tail $ dropWhile isDigit $ tail $ dropWhile isDigit $ tail str)
@@ -41,7 +40,7 @@ parseTuple str = ((read x, read y), tail $ dropWhile isDigit $ tail $ dropWhile 
 
 main :: IO ()
 main = do
-    putStrLn "Input the size of the board in the form of (m, n)"
+    putStrLn "Input the size of the board in the form of (m,n)"
     sizeStr <- getLine
     let size = parseSize sizeStr
     putStrLn "Input the initial configuration of the board"
