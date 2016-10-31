@@ -18,21 +18,18 @@ showLine (Config arr) y = map (\ x -> if (arr ! (x, y)) == Dead then '-' else '0
 parseSize :: String -> (Int, Int)
 parseSize str = fst $ parseTuple str
 
-parseBoard :: String -> [((Int, Int), Life)]
+createBoard :: [(Int, Int)] -> (Int, Int) -> Config
+createBoard coords size = Config $ array ((0, 0), size) $ map (\ c -> if elem c coords then (c, Alive) else (c, Dead)) $ range ((0, 0), size)
+
+parseBoard :: String -> [(Int, Int)]
 parseBoard str = fst $ parseCell $ tail str
 
-parseCell :: String -> ([((Int, Int), Life)], String)
+parseCell :: String -> ([(Int, Int)], String)
 parseCell [] = ([], [])
-parseCell str = ((coord, life) : board, r3)
+parseCell str = (coord : board, r2)
     where
         (coord, r1) = parseTuple $ tail str
-        (life, r2) = parseLife $ tail r1
-        (board, r3) = parseCell $ drop 2 r2
-
-parseLife :: String -> (Life, String)
-parseLife ('D':'e':'a':'d':r) = (Dead, r)
-parseLife ('A':'l':'i':'v':'e':r) = (Alive, r)
-parseLife _ = error "Parse error, expected dead or alive"
+        (board, r2) = parseCell $ drop 2 $ dropWhile isAlpha $ tail r1
 
 parseTuple :: String -> ((Int, Int), String)
 parseTuple str = ((read x, read y), tail $ dropWhile isDigit $ tail $ dropWhile isDigit $ tail str)
@@ -78,8 +75,7 @@ main = do
     let size = parseSize sizeStr
     putStrLn "Input the initial configuration of the board"
     boardStr <- getLine
-    let board = parseBoard boardStr
-    let config = (Config (array ((0, 0), size) board))
+    let config = createBoard (parseBoard boardStr) size
     putStrLn $ showConfig config
     askForStep config
 
